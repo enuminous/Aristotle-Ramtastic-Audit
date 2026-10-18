@@ -1,0 +1,35 @@
+--- a/Ramtastic/Dolbeault/DolbeaultTheorem.lean
++++ b/Ramtastic/Dolbeault/DolbeaultTheorem.lean
+@@ -19,6 +19,7 @@
+ 
+ import Mathlib.Tactic
+ import Ramtastic.Dolbeault.DolbeaultCohomology
++import Ramtastic.ComplexStructure.DelDelBar
+ 
+ namespace Ramtastic.Dolbeault.DolbeaultTheorem
+ 
+@@ -27,6 +28,7 @@
+ open Ramtastic.ComplexStructure.TypeDecomposition
+ open Ramtastic.Dolbeault.DolbeaultComplex
+ open Ramtastic.Dolbeault.DolbeaultCohomology
++open Ramtastic.ComplexStructure
+ 
+ noncomputable section
+ 
+@@ -69,14 +71,14 @@
+   constructor
+   · -- Im(∂f) = -(1/2)J*df, and J*(0) = 0
+     have := proj10_ofReal_im (fun x => extDeriv f x) x m
+-    simp [DelDelBar.del, this, hdf, pullbackJ_zero, Pi.zero_apply, smul_zero, neg_zero]
++    simp [DelDelBar.del, this, hdf, pullbackJ_apply, pullbackJ_zero, Pi.zero_apply, smul_zero, neg_zero]
+   constructor
+   · -- Re(∂̄f) = (1/2)df = 0
+     have := proj01_ofReal_re (fun x => extDeriv f x) x m
+     simp [DelDelBar.delbar, this, hdf, smul_zero]
+   · -- Im(∂̄f) = (1/2)J*df = 0
+     have := proj01_ofReal_im (fun x => extDeriv f x) x m
+-    simp [DelDelBar.delbar, this, hdf, pullbackJ_zero, Pi.zero_apply, smul_zero]
++    simp [DelDelBar.delbar, this, hdf, pullbackJ_apply, pullbackJ_zero, Pi.zero_apply, smul_zero]
+ 
+ end
+ 
