@@ -10,6 +10,15 @@ absent `Ramtastic/` tree, and its README described a different archive.
 [Audit findings](AUDIT.md) · [Verification](VERIFICATION.md) ·
 [Source provenance](PROVENANCE.md) · [Aristotle's original summary](ARISTOTLE_SUMMARY.md)
 
+## Interactive field guide
+
+The [website source](index.html) provides a findings dashboard, an interactive
+rotation lab, a six-step tutorial, a searchable index of all 83 source/audit
+modules, and links to Chris Forrester's original Ramtastic and the related papers.
+It distinguishes a recorded passing run from the latest live workflow status.
+See [website publication and maintenance](WEBSITE.md) for the GitHub Pages address
+and one-time activation step.
+
 ## What this checks
 
 - **78 Ramtastic source modules**, all imported by [Ramtastic.lean](Ramtastic.lean).
