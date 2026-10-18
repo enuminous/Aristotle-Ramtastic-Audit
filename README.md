@@ -1,10 +1,6 @@
 # Ramtastic Monolithic Zoo audit — 2026-10-16
 
-Start with [REPORT.md](REPORT.md) for the findings, [VERIFICATION.md](VERIFICATION.md)
-for compiler evidence, and [ZOO-46.md](ZOO-46.md) for every animal's disposition.
-The [publication addendum](PUBLICATION-ADDENDUM.md) preserves and distinguishes
-a concurrently uploaded Aristotle summary. The offline `index.html` provides a searchable entry point;
-[METHOD-LIMITS.md](METHOD-LIMITS.md) records exclusions and failed branches.
+
 
 This is a **flat audit bundle**: every ZIP member is at the archive root. It
 contains the audit, not a rearranged copy of the Lean project. The reproducer
