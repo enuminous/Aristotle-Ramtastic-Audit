@@ -1,42 +1,44 @@
 import Lean
 import Ramtastic
+import RamtasticAudit.BassCompletion
+import RamtasticAudit.SemanticProbes
+import RamtasticAudit.ZooProbes
+import RamtasticAudit.ProbeAxioms
 
 /-!
-# Axiom audit of the compiled Ramtastic modules
+# Compiled declaration audit
 
-Every declaration in the `Ramtastic` namespace, in all 78 modules imported by
-the root file `Ramtastic.lean`, is traced with `Lean.collectAxioms`.  The command
-below fails (and hence this file fails to build) if any declaration depends
-on an axiom other than `propext`, `Classical.choice` and `Quot.sound`
-(this includes `sorryAx`, which is what `sorry` elaborates to).
+Scan every declaration from an imported `Ramtastic` or `RamtasticAudit`
+module, including private names and declarations in other namespaces.
+Reject unsafe declarations, admissions, and dependencies beyond Lean's
+three allowed foundational axioms. `AuditProbe` is reserved for the
+failure controls inserted by `scripts/test_axiom_audit.py`.
 -/
-
-open Lean Elab Command
-
-def RamtasticAudit.allowedAxioms : List Name :=
-  [``propext, ``Classical.choice, ``Quot.sound]
-
-elab "#ramtastic_axiom_audit" : command => do
+open Lean in
+run_cmd do
   let env ← getEnv
-  let mut nThm := 0
-  let mut nDef := 0
-  let mut nOther := 0
-  let mut bad : Array (Name × Array Name) := #[]
+  let allowed : Array Name := #[``propext, ``Classical.choice, ``Quot.sound]
+  let mut count := 0
+  let mut theoremCount := 0
   let mut used : Std.HashSet Name := {}
-  for (n, ci) in env.constants.toList do
-    unless (`Ramtastic).isPrefixOf n do continue
-    match ci with
-    | .thmInfo _ => nThm := nThm + 1
-    | .defnInfo _ => nDef := nDef + 1
-    | .axiomInfo _ => bad := bad.push (n, #[n])
-    | _ => nOther := nOther + 1
-    let axs ← liftCoreM <| collectAxioms n
-    for a in axs do used := used.insert a
-    let nonstd := axs.filter (fun a => !RamtasticAudit.allowedAxioms.contains a)
-    unless nonstd.isEmpty do bad := bad.push (n, nonstd)
-  logInfo m!"theorems: {nThm}, definitions: {nDef}, other constants: {nOther}; \
-    axioms used anywhere: {used.toList}"
-  unless bad.isEmpty do
-    throwError m!"non-standard axioms found: {bad.toList}"
-
-#ramtastic_axiom_audit
+  for (name, info) in env.constants.toList do
+    let isProject := match env.getModuleIdxFor? name with
+      | some idx =>
+          let modName := env.header.moduleNames[idx.toNat]!
+          (`Ramtastic).isPrefixOf modName || (`RamtasticAudit).isPrefixOf modName
+      | none => (`AuditProbe).isPrefixOf (privateToUserName name)
+    if isProject then
+      if info.isUnsafe then
+        throwError "Unsafe project declaration {name}"
+      count := count + 1
+      if info matches .thmInfo _ then
+        theoremCount := theoremCount + 1
+      let axioms ← collectAxioms name
+      for ax in axioms do
+        used := used.insert ax
+        unless allowed.contains ax do
+          throwError "Unapproved axiom {ax} used by {name}"
+  if count == 0 then
+    throwError "Audit matched no project declarations"
+  logInfo m!"AXIOM_AUDIT_PASS declarations={count} theorems={theoremCount} unsafe=0"
+  logInfo m!"AXIOMS_USED {used.toList}"

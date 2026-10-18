@@ -1,74 +1,76 @@
-# Ramtastic Monolithic Zoo audit — 2026-10-16
+# Aristotle Ramtastic audit
 
+[![Complete Lean audit](https://github.com/enuminous/Aristotle-Ramtastic-Audit/actions/workflows/verify.yml/badge.svg)](https://github.com/enuminous/Aristotle-Ramtastic-Audit/actions/workflows/verify.yml)
 
+A reproducible Lean project containing the restored Ramtastic source, Aristotle's
+Clifford completion and semantic probes, and the earlier Monolithic Zoo
+counterexamples. The uploaded repository was incomplete: its root imported an
+absent `Ramtastic/` tree, and its README described a different archive.
 
-This is a **flat audit bundle**: every ZIP member is at the archive root. It
-contains the audit, not a rearranged copy of the Lean project. The reproducer
-fetches the original repositories at exact commits, preserving their imports.
+[Audit findings](AUDIT.md) · [Verification](VERIFICATION.md) ·
+[Source provenance](PROVENANCE.md) · [Aristotle's original summary](ARISTOTLE_SUMMARY.md)
 
-| Artifact | Purpose |
-|---|---|
-| `REPORT.md`, `SOURCE-REVIEW.md` | Findings, known-result comparison, semantic scope and remaining obligations |
-| `PLAN.md`, `operation-criteria.json` | Frozen criteria and retrospective/exploratory disclosure |
-| `zoo-46-ledger.json`, `.csv`, `ZOO-46.md` | All 46 animal dispositions |
-| `operation-catalogue.json` | Exact input schemas, current formal scopes and both source hashes |
-| `conformance-inputs.json`, `conformance-results.json` | Published fixtures, 46 adapter outputs and 90 comparisons |
-| `target-operation-*.json`, `extension-*.json` | Actual target inputs/outputs and five extension dispositions |
-| `source-manifest.json`, `source-inventory.json`, `structure-fields.json` | 84 file hashes, 77 modules, declarations, imports and assumptions |
-| `counterexamples.json`, `SemanticProbes.lean` | Four exact witnesses and Lean checks |
-| `StrictAudit.lean`, `ReleasedSubsetAudit.lean`, `test_axiom_audit.py` | Compiled declaration audit and rejection controls |
-| `diagnostic_namespace.py` | Explicit namespace/zero-form experiment for the release build defect |
-| `run_audit.py`, `reproduce.py` | Reproducible Python checks and repository retrieval |
-| `execution-evidence.json`, `*.log` | Hosted run identifiers, outcomes and captured evidence |
-| `SHA256SUMS.txt` | Integrity of every other archive member |
+## What this checks
+
+- **78 Ramtastic source modules**, all imported by [Ramtastic.lean](Ramtastic.lean).
+- **Five audit modules**, all imported by [RamtasticAudit.lean](RamtasticAudit.lean).
+- Clifford unit-vector and orthogonal-pair hinges, quarter turns, and metric
+  preservation under explicit inner-product hypotheses.
+- Semantic counterexamples for the BSD, Hodge, de Rham, and Hardy–Littlewood
+  interfaces, plus the earlier Zoo counterexamples.
+- A compiled dependency audit covering private declarations and declarations
+  outside the public namespaces. Only `propext`, `Classical.choice`, and
+  `Quot.sound` are allowed; unsafe declarations are rejected.
+- Failure controls for public/private axioms, `sorry`, native proof certificates,
+  and unsafe definitions; source digests and import coverage.
+
+Both libraries are default Lake targets. A plain `lake build` checks the release
+and audit modules. `bash verify.sh` additionally reruns the dependency audit and
+its rejection controls. See the workflow for the result at a particular commit;
+Aristotle's written summary is retained separately from that execution evidence.
 
 ## Reproduce
 
-Python 3.10+ and Git are required. The mathematical checks also require the
-[Lean toolchain manager](https://github.com/leanprover/elan). The original
-`lean-toolchain` and `lake-manifest.json` must remain unchanged.
+Install [elan](https://github.com/leanprover/elan), Python 3.10+, and Git, then:
 
 ```sh
-python3 reproduce.py --verify-only
-python3 reproduce.py --work-dir /tmp/ramtastic-zoo-reproduction
-python3 reproduce.py --work-dir /tmp/ramtastic-zoo-with-lean --lean
+git clone https://github.com/enuminous/Aristotle-Ramtastic-Audit.git
+cd Aristotle-Ramtastic-Audit
+lake exe cache get
+bash verify.sh
 ```
 
-Choose a new work directory for each reproduction. The first command works
-offline. The other commands fetch three pinned repositories. The `--lean` run
-first records the **unmodified release failure**, then applies the disclosed
-namespace/zero-form diagnostic in that disposable checkout and runs the build, axiom
-audit, rejection controls and semantic probes. Success of the reproducer means
-the expected observations were reproduced; it does not turn the release failure
-into a passing release build.
+Lean is pinned to `v4.30.0-rc1`; Mathlib is pinned in both Lake configuration
+and manifest to `8ec19128ad27190c2ec7c872d504be0a2877bd68`. Do not run `lake update`
+as part of verification. GitHub Actions uploads the build, integrity, axiom,
+and rejection-control logs as an artifact named for the checked commit.
 
-To run just the Python audit against existing clones:
+## Mathematical scope
 
-```sh
-python3 run_audit.py --source /path/to/Ramtastic \
-  --zoo /path/to/Monolithic-Zoo-Lean4 \
-  --engine /path/to/EFMW_Post156_Zoo_Audit --out /tmp/ramtastic-results
-```
+Compilation verifies the stated propositions under their hypotheses. Several
+named geometric and arithmetic results remain supplied assumptions or properties
+of abstract data. This project does not supply unconditional proofs of BSD,
+Hodge, twin primes, or a Yang–Mills mass gap. The probes make these boundaries
+inspectable rather than changing the definitions to hide them.
 
-The engine and Zoo clones must be at the pinned commits with no tracked edits.
-The Ramtastic inventory is read directly from its frozen Git object, not from
-mutable working-tree text.
+The [52-theorem finite BSD follow-on package](https://github.com/enuminous/papers/tree/main/formal/bsd-parity)
+is a separate Lean 4.28 project with its own verification. It is linked here,
+not silently counted in this Lean 4.30 build. The earlier
+[full Zoo audit](https://github.com/enuminous/Ramtastic/blob/main/audit/REPORT.md)
+retains its own operation ledger, inputs, and execution record.
 
-## Attribution and interpretation
+## Attribution and navigation
 
-Original Ramtastic author: C. Forrester (Adauriel); per-file formalization credits
-remain authoritative. [UPSTREAM-README.md](UPSTREAM-README.md) retains the original
-description and license statement verbatim, including its unqualified build
-claim; the current audit qualifies that claim. No ownership of upstream proofs
-is asserted. The Zoo registry, adapters and specifications retain their original
-attribution and pinned repository licenses. This package primarily references
-them rather than copying their complete implementations.
+Ramtastic's original author is C. Forrester (Adauriel); per-file formalization
+credits remain in the restored source. Aristotle run
+`6b97b551-c689-4d49-9ea2-282f6f81a993` supplied the uploaded completion and semantic
+probes. Matthew Chenoweth Wright / Monolithic directed the restoration and Zoo
+work, prepared with OpenAI Codex assistance. Restoration is not a claim of
+ownership of upstream mathematics. The original
+[usage statement](provenance/UPSTREAM-README.md#license) is preserved verbatim.
 
-Generated audit prose and scripts were prepared with AI assistance for Matthew
-Chenoweth Wright / eNuminous. Tests do not establish physical EFMW hypotheses,
-Hypernym product claims, or the unpublished halting theorem. No third-party
-message or upstream contribution is implied by publishing in the enuminous fork.
-
-[Ramtastic](https://github.com/enuminous/Ramtastic) ·
-[Canonical Zoo](https://github.com/enuminous/Monolithic-Zoo-Lean4) ·
+[Ramtastic fork](https://github.com/enuminous/Ramtastic) ·
+[Original Ramtastic](https://github.com/CasimirKnights/Ramtastic) ·
+[Monolithic Zoo](https://github.com/enuminous/Monolithic-Zoo-Lean4) ·
+[Papers](https://github.com/enuminous/papers) ·
 [eNuminous network](https://enuminous.github.io/EFMW/repositories.html)
