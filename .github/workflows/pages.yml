@@ -46,13 +46,22 @@ jobs:
               with urllib.request.urlopen(request, timeout=30) as response:
                   data = json.load(response)
               enabled = data.get('build_type') == 'workflow'
+              branch_publishing = data.get('build_type') == 'legacy'
           except urllib.error.HTTPError as error:
               if error.code != 404:
                   raise
               enabled = False
+              branch_publishing = False
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
               output.write('enabled=' + str(enabled).lower() + '\n')
-          if not enabled:
+          if branch_publishing:
+              message = ('Website checks passed. Pages is enabled with branch publishing; '
+                         'GitHub\'s automatic Pages workflow handles deployment. '
+                         'No additional setup is required.')
+              print('::notice::' + message)
+              with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+                  summary.write('## Automatic branch publication\n\n' + message + '\n')
+          elif not enabled:
               message = ('Website checks passed; deployment is pending. In Settings > Pages, '
                          'select GitHub Actions as the source, then rerun this workflow.')
               print('::notice::' + message)

@@ -6,21 +6,27 @@ The [README](README.md) remains the GitHub project entry point.
 
 ## Publishing
 
-The intended public address is
+The public address is
 <https://enuminous.github.io/Aristotle-Ramtastic-Audit/>.
-The site is live only after GitHub Pages is enabled and deployment succeeds.
+GitHub Pages is enabled with automatic branch publishing. The initial site
+deployment for commit `31cb918` passed in
+[run 39088335948](https://github.com/enuminous/Aristotle-Ramtastic-Audit/actions/runs/39088335948).
+The root `.nojekyll` file makes this a static publication.
 
-One-time setup: in this repository's **Settings → Pages → Build and deployment**,
-select **GitHub Actions** as the source. Then run
+The separate
 [Website checks and Pages deployment](https://github.com/enuminous/Aristotle-Ramtastic-Audit/actions/workflows/pages.yml)
-from the Actions tab. Later changes to the site trigger this workflow automatically.
-Until Pages is enabled, the workflow checks the files, reports the setup step,
-and explicitly skips deployment. A successful preparation job alone does not
-mean the website has been deployed.
+workflow validates the website. In branch-publishing mode it leaves deployment
+to GitHub's automatic Pages workflow. It can also deploy the site itself if
+the repository's **Settings → Pages → Build and deployment → Source** is changed
+to **GitHub Actions**; run the workflow once after changing that setting.
+If Pages is disabled, it reports the required setup and skips deployment.
+A successful preparation job alone does not mean a website has been deployed.
 
-Only `index.html`, `.nojekyll`, and `site-assets/` are deployed. All proof and
-document links point to GitHub. No build system, external font, tracking script,
-account, or application secret is required.
+The standalone workflow deploys only `index.html`, `.nojekyll`, and
+`site-assets/`. Branch publishing serves the configured repository source;
+the website's proof and document links point to GitHub in either mode.
+No build system, external font, tracking script, account, or application secret
+is required.
 
 ## Evidence and interaction
 

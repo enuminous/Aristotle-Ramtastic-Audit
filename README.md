@@ -12,12 +12,13 @@ absent `Ramtastic/` tree, and its README described a different archive.
 
 ## Interactive field guide
 
+[Open the Ramtastic Audit website](https://enuminous.github.io/Aristotle-Ramtastic-Audit/).
+
 The [website source](index.html) provides a findings dashboard, an interactive
 rotation lab, a six-step tutorial, a searchable index of all 83 source/audit
 modules, and links to Chris Forrester's original Ramtastic and the related papers.
 It distinguishes a recorded passing run from the latest live workflow status.
-See [website publication and maintenance](WEBSITE.md) for the GitHub Pages address
-and one-time activation step.
+See [website publication and maintenance](WEBSITE.md) for deployment and upkeep.
 
 ## What this checks
 
